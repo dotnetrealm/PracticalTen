@@ -1,31 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PracticalTen.Common;
-using System.Net.Mime;
 
 namespace PracticalTen.Controllers
 {
-    [Route("[controller]/[action]")]
     public class TestTwoController : Controller
     {
-        private IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         public TestTwoController(IWebHostEnvironment env)
         {
             _env = env;
         }
+
         public IActionResult Index()
         {
             return View();
         }
 
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
         public FileContentResult GetFileContentResult()
         {
-            var file = System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "data/sample.pdf"));
-            return new FileContentResult(file, "application/pdf");
+            byte[] file = System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "data/Sample.txt"));
+            return File(file, "text/plain");
         }
 
         public ContentResult GetContentResult()
         {
-            return Content("<h3>Hello World</h3>");
+            return Content("<h3>This is from ContentResult method</h3>");
         }
 
         public EmptyResult GetEmptyResult()
@@ -35,20 +35,26 @@ namespace PracticalTen.Controllers
 
         public JavascriptResult GetJavascriptResult()
         {
-            var jsScript = "alert('Hello World!');";
+            string jsScript = "alert('Hello World!');";
             return new JavascriptResult(jsScript);
         }
 
         public JsonResult GetJsonResult()
         {
-            var fileData = System.IO.File.ReadAllText(Path.Combine(_env.WebRootPath, "data/People.json"));
+            string fileData = System.IO.File.ReadAllText(Path.Combine(_env.WebRootPath, "data/People.json"));
             return Json(fileData);
         }
 
-        public IActionResult GetPartialViewResult()
+        public PartialViewResult GetPartialViewResult()
         {
-            ViewBag.Message = "This content is loaded using partial view!";
+            ViewBag.Message = $"This is PartialViewResult result!";
             return PartialView("_details");
+        }
+
+        [ResponseCache(Duration = 20, Location = ResponseCacheLocation.Any)]
+        public int GetTime()
+        {
+            return DateTime.Now.Second;
         }
     }
 }

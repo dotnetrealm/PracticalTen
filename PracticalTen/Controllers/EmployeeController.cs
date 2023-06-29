@@ -2,13 +2,11 @@
 
 namespace PracticalTen.Controllers
 {
-    [Route("[controller]")]
     public class EmployeeController : Controller
     {
-        [Route("~/")]
-        [Route("{Name?}")]
-        [Route("[action]/{Name?}")]
-        public IActionResult Index(string Name = "John")
+        [Route("[controller]/{Name?}")]
+        [Route("[controller]/[action]/{Name?}")]
+        public IActionResult Index(string Name = "Bhavin")
         {
             ViewBag.Name = Name;
             return View();
