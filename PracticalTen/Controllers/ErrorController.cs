@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace PracticalTen.Controllers
 {
+    
     public class ErrorController : Controller
     {
         readonly IDictionary<int, string> statusMessages = new Dictionary<int, string>();
@@ -17,19 +18,25 @@ namespace PracticalTen.Controllers
             statusMessages.Add(503, "Service unavailable!");
         }
 
+        /// <summary>
+        /// Exception/Error page handling
+        /// </summary>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("Error/{statusCode?}")]
         public IActionResult Error(int statusCode)
         {
             var errorFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
             string message = String.Empty;
+            
             if (errorFeature == null)
             {
+                // Prepare message for Exception
                 var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerFeature>();
                 message = exceptionFeature?.Error.Message ?? statusMessages[500];
             }
             else
             {
+                // Prepare message for Error page
                 message = (statusMessages.ContainsKey(statusCode)) ? statusMessages[statusCode] : "Something went wrong!";
             }
 
@@ -38,8 +45,9 @@ namespace PracticalTen.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
                 StatusCode = statusCode,
                 Message = message,
-                OriginalPath = errorFeature?.OriginalPath ?? string.Empty,
+                OriginalPath = errorFeature?.OriginalPath ?? "Not Found",
             });
         }
     }
 }
+
